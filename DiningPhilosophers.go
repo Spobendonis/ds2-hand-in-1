@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -121,22 +122,29 @@ func philo(id int, philosophers [4]twoWayChannel) {
 
 }
 
-func fork(c1 chan int, c2 chan int) {
+func fork(c1 chan bool, c2 chan bool) {
 	fmt.Println("Fork Created")
-	var holder int
-	var c1res int
-	var c2res int
+	held := false
 	for {
-		c1res = <-c1
-		c2res = <-c2
-		if holder == 0 && c1res != 0 {
-			holder = c1res
-			c1res = 0
-			c1 <- holder
-		} else if holder == 0 && c2res != 0 {
-			holder = c2res
-			c2res = 0
-			c2 <- holder
+		left := <-c1
+		if left {
+			if held {
+				fmt.Println("ERROR FORK ALREADY HELD")
+				os.Exit(3)
+			} else {
+				held = true
+				held = <-c1
+			}
+		}
+		right := <-c2
+		if right {
+			if held {
+				fmt.Println("ERROR FORK ALREADY HELD")
+				os.Exit(3)
+			} else {
+				held = true
+				held = <-c2
+			}
 		}
 	}
 }
