@@ -46,30 +46,35 @@ func main() {
 	fourthPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c45, c54}, twoWayChannel{c41, c14}, twoWayChannel{c42, c24}, twoWayChannel{c43, c34}}
 	fifthPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c51, c15}, twoWayChannel{c52, c25}, twoWayChannel{c53, c35}, twoWayChannel{c54, c45}}
 
-	// cf1 := make(chan int, 1)
-	// cf2 := make(chan int, 1)
-	// cf3 := make(chan int, 1)
-	// cf4 := make(chan int, 1)
-	// cf5 := make(chan int, 1)
+	a1 := make(chan bool, 1)
+	a2 := make(chan bool, 1)
+	b2 := make(chan bool, 1)
+	b3 := make(chan bool, 1)
+	c3 := make(chan bool, 1)
+	c4 := make(chan bool, 1)
+	d4 := make(chan bool, 1)
+	d5 := make(chan bool, 1)
+	e5 := make(chan bool, 1)
+	e1 := make(chan bool, 1)
 
 	fmt.Println("Channels Initialised")
-	go philo(1, firstPhilosopherChannels)
-	go philo(3, thirdPhilosopherChannels)
-	go philo(2, secondPhilosopherChannels)
-	go philo(4, fourthPhilosopherChannels)
-	go philo(5, fifthPhilosopherChannels)
+	go philo(1, firstPhilosopherChannels, a1, e1)
+	go philo(2, secondPhilosopherChannels, a2, b2)
+	go philo(3, thirdPhilosopherChannels, b3, c3)
+	go philo(4, fourthPhilosopherChannels, c4, d4)
+	go philo(5, fifthPhilosopherChannels, d5, e5)
 
-	// go fork(cf1, cf2)
-	// go fork(cf2, cf3)
-	// go fork(cf3, cf4)
-	// go fork(cf4, cf5)
-	// go fork(cf5, cf1)
+	go fork(a1, a2)
+	go fork(b2, b3)
+	go fork(c3, c4)
+	go fork(d4, d5)
+	go fork(e5, e1)
 	fmt.Println("Table Initialised")
 	time.Sleep(10 * time.Second)
 	fmt.Println("Program Terminated")
 }
 
-func philo(id int, philosophers [4]twoWayChannel) {
+func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan bool) {
 	// The 'id' of the philosopher is only used for debugging purposes, and to clarify who is eating / thinking
 	// Does not affect the logic of the code in any way
 
@@ -118,33 +123,34 @@ func philo(id int, philosophers [4]twoWayChannel) {
 		}
 	}
 
-	fmt.Println()
+	fmt.Println(isEating)
 
 }
 
 func fork(c1 chan bool, c2 chan bool) {
 	fmt.Println("Fork Created")
-	held := false
-	for {
-		left := <-c1
-		if left {
-			if held {
-				fmt.Println("ERROR FORK ALREADY HELD")
-				os.Exit(3)
-			} else {
-				held = true
-				held = <-c1
-			}
+	select {
+	case <-c1:
+		fmt.Println("got msg from c1")
+		fmt.Println("waiting to put down fork (c1)")
+		select {
+		case <-c2:
+			fmt.Println("ERROR FORK ALREADY HELD")
+			os.Exit(3)
 		}
-		right := <-c2
-		if right {
-			if held {
-				fmt.Println("ERROR FORK ALREADY HELD")
-				os.Exit(3)
-			} else {
-				held = true
-				held = <-c2
-			}
+		if false == <-c1 {
+			break
+		}
+	case <-c2:
+		fmt.Println("got msg from c2")
+		fmt.Println("waiting to put down fork (c2)")
+		select {
+		case <-c1:
+			fmt.Println("ERROR FORK ALREADY HELD")
+			os.Exit(3)
+		}
+		if false == <-c2 {
+			break
 		}
 	}
 }
