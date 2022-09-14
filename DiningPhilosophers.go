@@ -53,8 +53,8 @@ func main() {
 
 	fmt.Println("Channels Initialised")
 	go philo(1, firstPhilosopherChannels)
-	go philo(2, secondtPhilosopherChannels)
 	go philo(3, thirdtPhilosopherChannels)
+	go philo(2, secondtPhilosopherChannels)
 	go philo(4, fourthtPhilosopherChannels)
 	go philo(5, fifthtPhilosopherChannels)
 
@@ -77,6 +77,7 @@ func philo(id int, philosophers [4]twoWayChannel) {
 		for i := 0; i < 4; i++ {
 			philosophers[i].to <- diceRoll
 		}
+		fmt.Println(diceRoll, " ", id)
 
 		var otherDiceRolls [4]int
 
