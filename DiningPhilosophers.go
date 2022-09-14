@@ -69,6 +69,9 @@ func main() {
 }
 
 func philo(id int, philosophers [4]twoWayChannel) {
+	// The 'id' of the philosopher is only used for debugging purposes, and to clarify who is eating / thinking
+	// Does not affect the logic of the code in any way
+
 	isEating := false
 
 	for {
@@ -108,12 +111,13 @@ func philo(id int, philosophers [4]twoWayChannel) {
 		if totalMaxDiceRolls == 1 {
 			if diceRoll == max {
 				isEating = true
+				fmt.Println("Philosopher ", id, " is eating.")
 			}
 			break
 		}
 	}
 
-	fmt.Println(isEating, " ", id)
+	fmt.Println()
 
 }
 
