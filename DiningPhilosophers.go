@@ -13,6 +13,7 @@ type twoWayChannel struct {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 
 	fmt.Println("Starting Simulation")
 	c12 := make(chan int, 2)
@@ -40,11 +41,11 @@ func main() {
 	c53 := make(chan int, 2)
 	c54 := make(chan int, 2)
 
-	firstPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c15, c51}, twoWayChannel{c12, c21}, twoWayChannel{c13, c31}, twoWayChannel{c14, c41}}
-	secondPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c25, c52}, twoWayChannel{c21, c12}, twoWayChannel{c23, c32}, twoWayChannel{c24, c42}}
-	thirdPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c35, c53}, twoWayChannel{c31, c13}, twoWayChannel{c32, c23}, twoWayChannel{c34, c43}}
-	fourthPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c45, c54}, twoWayChannel{c41, c14}, twoWayChannel{c42, c24}, twoWayChannel{c43, c34}}
-	fifthPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c51, c15}, twoWayChannel{c52, c25}, twoWayChannel{c53, c35}, twoWayChannel{c54, c45}}
+	firstPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c15, c51}, twoWayChannel{c13, c31}, twoWayChannel{c14, c41}, twoWayChannel{c12, c21}}
+	secondPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c21, c12}, twoWayChannel{c24, c42}, twoWayChannel{c25, c52}, twoWayChannel{c23, c32}}
+	thirdPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c32, c23}, twoWayChannel{c35, c53}, twoWayChannel{c31, c13}, twoWayChannel{c34, c43}}
+	fourthPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c43, c34}, twoWayChannel{c41, c14}, twoWayChannel{c42, c24}, twoWayChannel{c45, c54}}
+	fifthPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c54, c45}, twoWayChannel{c52, c25}, twoWayChannel{c53, c35}, twoWayChannel{c51, c15}}
 
 	a1 := make(chan bool, 1)
 	a2 := make(chan bool, 1)
@@ -147,11 +148,10 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 
 							// Put down forks
 
-							break
 						} else if message == -1 {
 							fmt.Println("Philosopher ", id, " is thinking.")
-							break
 						}
+						break
 					case message := <-philosophers[1].from:
 						if message == 1 {
 
@@ -163,8 +163,8 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 
 						} else if message == -1 {
 							fmt.Println("Philosopher ", id, " is thinking.")
-							break
 						}
+						break
 					case message := <-philosophers[2].from:
 						if message == 1 {
 
@@ -176,8 +176,8 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 
 						} else if message == -1 {
 							fmt.Println("Philosopher ", id, " is thinking.")
-							break
 						}
+						break
 					case message := <-philosophers[3].from:
 						if message == 1 {
 
@@ -189,8 +189,8 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 
 						} else if message == -1 {
 							fmt.Println("Philosopher ", id, " is thinking.")
-							break
 						}
+						break
 					}
 				}
 			}
