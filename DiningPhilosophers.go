@@ -78,6 +78,10 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 	// The 'id' of the philosopher is only used for debugging purposes, and to clarify who is eating / thinking
 	// Does not affect the logic of the code in any way
 
+	isEating := false
+	timesEating := 0
+	timesThinking := 0
+
 	for {
 
 		// Roll the dice
@@ -123,7 +127,11 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 
 				// Pick up forks
 
-				fmt.Println("Philosopher ", id, " is eating.")
+				if !isEating {
+					fmt.Println("Philosopher ", id, " is eating", timesEating, " times")
+					isEating = true
+					timesEating++
+				}
 
 				// Choose who else should eat
 				philosophers[0].to <- -1
@@ -135,6 +143,7 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 
 			} else { // If the current philosopher lost
 
+			inner:
 				for { // Continuously check for message from other philosophers
 					// -1 means the current philosopher geats to eat, -2 means
 					select {
@@ -143,63 +152,105 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 
 							// Pick up forks
 
-							fmt.Println("Philosopher ", id, " is eating.")
+							if !isEating {
+								timesEating++
+								fmt.Println("Philosopher ", id, " is eating", timesEating, " times")
+								isEating = true
+							}
 
 							// Put down forks
 
-							break
+							break inner
 						} else if message == -1 {
-							fmt.Println("Philosopher ", id, " is thinking.")
-							break
+
+							if isEating {
+								timesThinking++
+								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
+								isEating = false
+							}
+							break inner
 						}
 					case message := <-philosophers[1].from:
 						if message == 1 {
 
 							// Pick up forks
 
-							fmt.Println("Philosopher ", id, " is eating.")
+							if !isEating {
+								timesEating++
+								fmt.Println("Philosopher ", id, " is eating", timesEating, " times")
+								isEating = true
+							}
 
 							// Put down forks
 
+							break inner
 						} else if message == -1 {
-							fmt.Println("Philosopher ", id, " is thinking.")
-							break
+
+							if isEating {
+								timesThinking++
+								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
+								isEating = false
+							}
+							break inner
 						}
 					case message := <-philosophers[2].from:
 						if message == 1 {
 
 							// Pick up forks
 
-							fmt.Println("Philosopher ", id, " is eating.")
+							if !isEating {
+								timesEating++
+								fmt.Println("Philosopher ", id, " is eating", timesEating, " times")
+								isEating = true
+							}
 
 							// Put down forks
 
+							break inner
 						} else if message == -1 {
-							fmt.Println("Philosopher ", id, " is thinking.")
-							break
+
+							if isEating {
+								timesThinking++
+								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
+								isEating = false
+							}
+							break inner
 						}
 					case message := <-philosophers[3].from:
 						if message == 1 {
 
 							// Pick up forks
 
-							fmt.Println("Philosopher ", id, " is eating.")
+							if !isEating {
+								timesEating++
+								fmt.Println("Philosopher ", id, " is eating", timesEating, " times")
+								isEating = true
+							}
 
 							// Put down forks
 
+							break inner
 						} else if message == -1 {
-							fmt.Println("Philosopher ", id, " is thinking.")
-							break
+
+							if isEating {
+								timesThinking++
+								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
+								isEating = false
+							}
+							break inner
 						}
 					}
+
 				}
+
 			}
 		}
 	}
+
 }
 
 func fork(c1 chan bool, c2 chan bool) {
-	fmt.Println("Fork Created")
+	// fmt.Println("Fork Created")
 	select {
 	case <-c1:
 		fmt.Println("got msg from c1")
