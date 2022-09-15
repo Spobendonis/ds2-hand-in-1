@@ -78,22 +78,24 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 	// The 'id' of the philosopher is only used for debugging purposes, and to clarify who is eating / thinking
 	// Does not affect the logic of the code in any way
 
-	isEating := false
-
 	for {
 
+		// Roll the dice
 		diceRoll := rand.Intn(2048)
+
+		// Tell other philosophers about result
 		for i := 0; i < 4; i++ {
 			philosophers[i].to <- diceRoll
 		}
-		// fmt.Println(diceRoll, " ", id)
 
+		// Find out what the other philosophers rolled
 		var otherDiceRolls [4]int
 
 		for i := 0; i < 4; i++ {
 			otherDiceRolls[i] = <-philosophers[i].from
 		}
 
+		// Looks for the highest diceroll
 		max := diceRoll
 
 		for i := 0; i < 4; i++ {
@@ -101,6 +103,8 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 				max = otherDiceRolls[i]
 			}
 		}
+
+		// Checks how many philosophers got the highest dice roll
 
 		totalMaxDiceRolls := 0
 
@@ -114,17 +118,84 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 			}
 		}
 
-		if totalMaxDiceRolls == 1 {
-			if diceRoll == max {
-				isEating = true
+		if totalMaxDiceRolls == 1 { // Case where there is found a winner. If no winner is found, the for-loop repeats
+			if diceRoll == max { // If the current philosopher is the winner of the dice roll
+
+				// Pick up forks
+
 				fmt.Println("Philosopher ", id, " is eating.")
+
+				// Choose who else should eat
+				philosophers[0].to <- -1
+				philosophers[1].to <- 1
+				philosophers[2].to <- -1
+				philosophers[3].to <- -1
+
+				// Put down forks
+
+			} else { // If the current philosopher lost
+
+				for { // Continuously check for message from other philosophers
+					// -1 means the current philosopher geats to eat, -2 means
+					select {
+					case message := <-philosophers[0].from:
+						if message == 1 {
+
+							// Pick up forks
+
+							fmt.Println("Philosopher ", id, " is eating.")
+
+							// Put down forks
+
+							break
+						} else if message == -1 {
+							fmt.Println("Philosopher ", id, " is thinking.")
+							break
+						}
+					case message := <-philosophers[1].from:
+						if message == 1 {
+
+							// Pick up forks
+
+							fmt.Println("Philosopher ", id, " is eating.")
+
+							// Put down forks
+
+						} else if message == -1 {
+							fmt.Println("Philosopher ", id, " is thinking.")
+							break
+						}
+					case message := <-philosophers[2].from:
+						if message == 1 {
+
+							// Pick up forks
+
+							fmt.Println("Philosopher ", id, " is eating.")
+
+							// Put down forks
+
+						} else if message == -1 {
+							fmt.Println("Philosopher ", id, " is thinking.")
+							break
+						}
+					case message := <-philosophers[3].from:
+						if message == 1 {
+
+							// Pick up forks
+
+							fmt.Println("Philosopher ", id, " is eating.")
+
+							// Put down forks
+
+						} else if message == -1 {
+							fmt.Println("Philosopher ", id, " is thinking.")
+							break
+						}
+					}
+				}
 			}
-			break
 		}
 	}
-
-	fmt.Println(isEating)
-
 }
 
 func fork(c1 chan bool, c2 chan bool) {
