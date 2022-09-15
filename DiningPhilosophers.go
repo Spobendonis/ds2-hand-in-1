@@ -65,11 +65,11 @@ func main() {
 	go philo(4, fourthPhilosopherChannels, c4, d4)
 	go philo(5, fifthPhilosopherChannels, d5, e5)
 
-	go fork(a1, a2)
-	go fork(b2, b3)
-	go fork(c3, c4)
-	go fork(d4, d5)
-	go fork(e5, e1)
+	go fork(1.5, a1, a2)
+	go fork(2.5, b2, b3)
+	go fork(3.5, c3, c4)
+	go fork(4.5, d4, d5)
+	go fork(0.5, e5, e1)
 	fmt.Println("Table Initialised")
 	time.Sleep(10 * time.Second)
 	fmt.Println("Program Terminated")
@@ -84,6 +84,7 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 	timesThinking := 0
 
 	philosophersReady := [4]bool{false, false, false, false}
+	var otherDiceRolls [4]int
 
 	for {
 
@@ -91,35 +92,46 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 			philosophers[i].to <- 0
 		}
 
-		//checkIsReady:
 		for {
+
 			if philosophersReady[0] && philosophersReady[1] && philosophersReady[2] && philosophersReady[3] {
-				time.Sleep(1)
-
 				// fmt.Println("All people ready,", id)
-
+				// time.Sleep(1)
 				break
 			}
 
-			select {
-			case message := <-philosophers[0].from:
-				if message == 0 {
+			if !philosophersReady[0] {
+				num := <-philosophers[0].from
+				if 0 == num {
 					philosophersReady[0] = true
-				}
-			case message := <-philosophers[1].from:
-				if message == 0 {
-					philosophersReady[1] = true
-				}
-			case message := <-philosophers[2].from:
-				if message == 0 {
-					philosophersReady[2] = true
-				}
-			case message := <-philosophers[3].from:
-				if message == 0 {
-					philosophersReady[3] = true
+				} else {
+					fmt.Println("Recieved ", num, " instead of 0")
 				}
 			}
-
+			if !philosophersReady[1] {
+				num := <-philosophers[1].from
+				if 0 == num {
+					philosophersReady[1] = true
+				} else {
+					fmt.Println("Recieved ", num, " instead of 0")
+				}
+			}
+			if !philosophersReady[2] {
+				num := <-philosophers[2].from
+				if 0 == num {
+					philosophersReady[2] = true
+				} else {
+					fmt.Println("Recieved ", num, " instead of 0")
+				}
+			}
+			if !philosophersReady[3] {
+				num := <-philosophers[3].from
+				if 0 == num {
+					philosophersReady[3] = true
+				} else {
+					fmt.Println("Recieved ", num, " instead of 0")
+				}
+			}
 		}
 
 		philosophersReady = [4]bool{false, false, false, false}
@@ -127,7 +139,7 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 		// wait for confirmation
 
 		// Roll the dice
-		diceRoll := rand.Intn(2048)
+		diceRoll := rand.Intn(2048) + 10
 
 		// Tell other philosophers about result
 		for i := 0; i < 4; i++ {
@@ -137,7 +149,6 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 		// fmt.Println(id, "sent dicerolls")
 
 		// Find out what the other philosophers rolled
-		var otherDiceRolls [4]int
 
 		for i := 0; i < 4; i++ {
 			otherDiceRolls[i] = <-philosophers[i].from
@@ -194,6 +205,7 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 			inner:
 				for { // Continuously check for message from other philosophers
 					// -1 means the current philosopher geats to eat, -2 means
+
 					select {
 					case message := <-philosophers[0].from:
 						// fmt.Println(message, id)
@@ -211,15 +223,15 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 							left <- false
 							right <- false
 
-						} else if message == -1 {
+						} else if message == 0 {
+							philosophersReady[0] = true
+						} else {
 
 							if isEating {
 								timesThinking++
 								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
 								isEating = false
 							}
-						} else if message == 0 {
-							philosophersReady[0] = true
 						}
 						break inner
 					case message := <-philosophers[1].from:
@@ -238,15 +250,15 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 							left <- false
 							right <- false
 
-						} else if message == -1 {
+						} else if message == 0 {
+							philosophersReady[1] = true
+						} else {
 
 							if isEating {
 								timesThinking++
 								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
 								isEating = false
 							}
-						} else if message == 0 {
-							philosophersReady[1] = true
 						}
 						break inner
 					case message := <-philosophers[2].from:
@@ -265,15 +277,15 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 							left <- false
 							right <- false
 
-						} else if message == -1 {
+						} else if message == 0 {
+							philosophersReady[2] = true
+						} else {
 
 							if isEating {
 								timesThinking++
 								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
 								isEating = false
 							}
-						} else if message == 0 {
-							philosophersReady[2] = true
 						}
 						break inner
 					case message := <-philosophers[3].from:
@@ -293,15 +305,15 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 							left <- false
 							right <- false
 
-						} else if message == -1 {
+						} else if message == 0 {
+							philosophersReady[3] = true
+						} else {
 
 							if isEating {
 								timesThinking++
 								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
 								isEating = false
 							}
-						} else if message == 0 {
-							philosophersReady[3] = true
 						}
 						break inner
 					}
@@ -314,7 +326,7 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 
 }
 
-func fork(c1 chan bool, c2 chan bool) {
+func fork(id float32, c1 chan bool, c2 chan bool) {
 	beingHeld := false
 	// fmt.Println("Fork Created")
 	for {
@@ -326,7 +338,7 @@ func fork(c1 chan bool, c2 chan bool) {
 			} else if !beingHeld && message {
 				beingHeld = true
 			} else {
-				fmt.Println("ERROR FORK ALREADY HELD")
+				fmt.Println("ERROR FORK ALREADY HELD: ", id)
 				os.Exit(3)
 			}
 
@@ -345,7 +357,7 @@ func fork(c1 chan bool, c2 chan bool) {
 			} else if !beingHeld && message {
 				beingHeld = true
 			} else {
-				fmt.Println("ERROR FORK ALREADY HELD")
+				fmt.Println("ERROR FORK ALREADY HELD: ", id)
 				os.Exit(3)
 			}
 
