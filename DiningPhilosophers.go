@@ -12,6 +12,14 @@ type twoWayChannel struct {
 	from chan int
 }
 
+/* Deadlocks in the system are prevented by
+having all philosophers agree upon who gets
+to eat. This is done through a dice roll,
+where the winner gets to eat (and gets to
+choose who else can eat). All philosophers
+are also synchronized, by them agreeing
+to whenever a new dice roll happens */
+
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
@@ -58,7 +66,6 @@ func main() {
 	e5 := make(chan bool)
 	e1 := make(chan bool)
 
-	fmt.Println("Channels Initialised")
 	go philo(1, firstPhilosopherChannels, a1, e1)
 	go philo(2, secondPhilosopherChannels, a2, b2)
 	go philo(3, thirdPhilosopherChannels, b3, c3)
@@ -70,7 +77,7 @@ func main() {
 	go fork(3.5, c3, c4)
 	go fork(4.5, d4, d5)
 	go fork(0.5, e5, e1)
-	fmt.Println("Table Initialised")
+
 	time.Sleep(10 * time.Second)
 	fmt.Println("Program Terminated")
 }
