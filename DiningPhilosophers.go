@@ -47,16 +47,16 @@ func main() {
 	fourthPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c43, c34}, twoWayChannel{c41, c14}, twoWayChannel{c42, c24}, twoWayChannel{c45, c54}}
 	fifthPhilosopherChannels := [4]twoWayChannel{twoWayChannel{c54, c45}, twoWayChannel{c52, c25}, twoWayChannel{c53, c35}, twoWayChannel{c51, c15}}
 
-	a1 := make(chan bool, 1)
-	a2 := make(chan bool, 1)
-	b2 := make(chan bool, 1)
-	b3 := make(chan bool, 1)
-	c3 := make(chan bool, 1)
-	c4 := make(chan bool, 1)
-	d4 := make(chan bool, 1)
-	d5 := make(chan bool, 1)
-	e5 := make(chan bool, 1)
-	e1 := make(chan bool, 1)
+	a1 := make(chan bool)
+	a2 := make(chan bool)
+	b2 := make(chan bool)
+	b3 := make(chan bool)
+	c3 := make(chan bool)
+	c4 := make(chan bool)
+	d4 := make(chan bool)
+	d5 := make(chan bool)
+	e5 := make(chan bool)
+	e1 := make(chan bool)
 
 	fmt.Println("Channels Initialised")
 	go philo(1, firstPhilosopherChannels, a1, e1)
@@ -104,33 +104,33 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 				num := <-philosophers[0].from
 				if 0 == num {
 					philosophersReady[0] = true
-				} else {
+				} /* else {
 					fmt.Println("Recieved ", num, " instead of 0")
-				}
+				} */
 			}
 			if !philosophersReady[1] {
 				num := <-philosophers[1].from
 				if 0 == num {
 					philosophersReady[1] = true
-				} else {
+				} /*  else {
 					fmt.Println("Recieved ", num, " instead of 0")
-				}
+				} */
 			}
 			if !philosophersReady[2] {
 				num := <-philosophers[2].from
 				if 0 == num {
 					philosophersReady[2] = true
-				} else {
+				} /* else {
 					fmt.Println("Recieved ", num, " instead of 0")
-				}
+				} */
 			}
 			if !philosophersReady[3] {
 				num := <-philosophers[3].from
 				if 0 == num {
 					philosophersReady[3] = true
-				} else {
+				} /*  else {
 					fmt.Println("Recieved ", num, " instead of 0")
-				}
+				} */
 			}
 		}
 
