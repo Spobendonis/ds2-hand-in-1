@@ -197,7 +197,7 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 
 			inner:
 				for { // Continuously check for message from other philosophers
-					// -1 means the current philosopher geats to eat, -2 means
+					// 1 means the current philosopher geats to eat, -1 means
 
 					select {
 					case message := <-philosophers[0].from:
