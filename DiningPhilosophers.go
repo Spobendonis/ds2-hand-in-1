@@ -95,8 +95,6 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 		for {
 
 			if philosophersReady[0] && philosophersReady[1] && philosophersReady[2] && philosophersReady[3] {
-				// fmt.Println("All people ready,", id)
-				// time.Sleep(1)
 				break
 			}
 
@@ -104,33 +102,25 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 				num := <-philosophers[0].from
 				if 0 == num {
 					philosophersReady[0] = true
-				} /* else {
-					fmt.Println("Recieved ", num, " instead of 0")
-				} */
+				}
 			}
 			if !philosophersReady[1] {
 				num := <-philosophers[1].from
 				if 0 == num {
 					philosophersReady[1] = true
-				} /*  else {
-					fmt.Println("Recieved ", num, " instead of 0")
-				} */
+				}
 			}
 			if !philosophersReady[2] {
 				num := <-philosophers[2].from
 				if 0 == num {
 					philosophersReady[2] = true
-				} /* else {
-					fmt.Println("Recieved ", num, " instead of 0")
-				} */
+				}
 			}
 			if !philosophersReady[3] {
 				num := <-philosophers[3].from
 				if 0 == num {
 					philosophersReady[3] = true
-				} /*  else {
-					fmt.Println("Recieved ", num, " instead of 0")
-				} */
+				}
 			}
 		}
 
@@ -146,15 +136,11 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 			philosophers[i].to <- diceRoll
 		}
 
-		// fmt.Println(id, "sent dicerolls")
-
 		// Find out what the other philosophers rolled
 
 		for i := 0; i < 4; i++ {
 			otherDiceRolls[i] = <-philosophers[i].from
 		}
-
-		// fmt.Println(id, "recieved dicerolls")
 
 		// Looks for the highest diceroll
 		max := diceRoll
@@ -208,7 +194,6 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 
 					select {
 					case message := <-philosophers[0].from:
-						// fmt.Println(message, id)
 						if message == 1 {
 
 							left <- true
@@ -219,14 +204,11 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 								fmt.Println("Philosopher ", id, " is eating", timesEating, " times")
 								isEating = true
 							}
-
 							left <- false
 							right <- false
-
 						} else if message == 0 {
 							philosophersReady[0] = true
 						} else {
-
 							if isEating {
 								timesThinking++
 								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
@@ -235,25 +217,19 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 						}
 						break inner
 					case message := <-philosophers[1].from:
-						// fmt.Println(message, id)
 						if message == 1 {
-
 							left <- true
 							right <- true
-
 							if !isEating {
 								timesEating++
 								fmt.Println("Philosopher ", id, " is eating", timesEating, " times")
 								isEating = true
 							}
-
 							left <- false
 							right <- false
-
 						} else if message == 0 {
 							philosophersReady[1] = true
 						} else {
-
 							if isEating {
 								timesThinking++
 								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
@@ -262,25 +238,20 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 						}
 						break inner
 					case message := <-philosophers[2].from:
-						// fmt.Println(message, id)
 						if message == 1 {
-
 							left <- true
 							right <- true
-
 							if !isEating {
 								timesEating++
 								fmt.Println("Philosopher ", id, " is eating", timesEating, " times")
 								isEating = true
 							}
-
 							left <- false
 							right <- false
 
 						} else if message == 0 {
 							philosophersReady[2] = true
 						} else {
-
 							if isEating {
 								timesThinking++
 								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
@@ -289,26 +260,19 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 						}
 						break inner
 					case message := <-philosophers[3].from:
-						// fmt.Println(message, id)
-
 						if message == 1 {
-
 							left <- true
 							right <- true
-
 							if !isEating {
 								timesEating++
 								fmt.Println("Philosopher ", id, " is eating", timesEating, " times")
 								isEating = true
 							}
-
 							left <- false
 							right <- false
-
 						} else if message == 0 {
 							philosophersReady[3] = true
 						} else {
-
 							if isEating {
 								timesThinking++
 								fmt.Println("Philosopher ", id, " is thinking", timesThinking, " times")
@@ -328,11 +292,9 @@ func philo(id int, philosophers [4]twoWayChannel, left chan bool, right chan boo
 
 func fork(id float32, c1 chan bool, c2 chan bool) {
 	beingHeld := false
-	// fmt.Println("Fork Created")
 	for {
 		select {
 		case message := <-c1:
-
 			if beingHeld && !message {
 				beingHeld = false
 			} else if !beingHeld && message {
@@ -342,16 +304,7 @@ func fork(id float32, c1 chan bool, c2 chan bool) {
 				os.Exit(3)
 			}
 
-			//fmt.Println("got msg from c1")
-			//fmt.Println("waiting to put down fork (c1)")
-			// select {
-			// case <-c2:
-			// 	fmt.Println("ERROR FORK ALREADY HELD")
-			// 	os.Exit(3)
-			// case <-
-			//}
 		case message := <-c2:
-
 			if beingHeld && !message {
 				beingHeld = false
 			} else if !beingHeld && message {
@@ -360,17 +313,6 @@ func fork(id float32, c1 chan bool, c2 chan bool) {
 				fmt.Println("ERROR FORK ALREADY HELD: ", id)
 				os.Exit(3)
 			}
-
-			//fmt.Println("got msg from c2")
-			//fmt.Println("waiting to put down fork (c2)")
-			// select {
-			// case <-c1:
-			// 	fmt.Println("ERROR FORK ALREADY HELD")
-			// 	os.Exit(3)
-			// }
-			// if false == <-c2 {
-			// 	break
-			// }
 		}
 	}
 }
